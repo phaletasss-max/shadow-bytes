@@ -1,6 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
+  "build": {
+    "env": {
+      "ENABLE_EXPERIMENTAL_COREPACK": "1"
+    }
+  },
   "installCommand": "corepack enable && pnpm --dir frontend install --frozen-lockfile",
   "buildCommand": "pnpm --dir frontend run build",
   "outputDirectory": "frontend/dist"
