@@ -22,11 +22,11 @@ export function Topology({ trace }: { trace: Trace }) {
         <Node label="Pedidos" caption="Orquestador" state={trace.orders} className="node-orders" />
         <Connector label="REST" className="link-order-product" vertical />
         <Node label="Productos" caption="Catálogo" state={trace.products} className="node-products" />
-        <Connector label="REST" className="link-order-inventory" vertical />
+        <Connector label="REST" className="link-order-inventory" />
         <Node label="Inventario" caption="Reserva" state={trace.inventory} className="node-inventory" />
-        <Connector label="REST" className="link-order-payment" vertical />
+        <Connector label="REST" className="link-order-payment" />
         <Node label="Pagos" caption="Aprobación" state={trace.payments} className="node-payments" />
-        <Connector label="ORDER_PAID" className="link-payment-rabbit" vertical async />
+        <Connector label="ORDER_PAID" className="link-payment-rabbit" async />
         <Node label="RabbitMQ" caption="Event broker" state={trace.rabbitmq} className="node-rabbit" broker />
         <Connector className="link-rabbit-shipping" vertical async />
         <Connector className="link-rabbit-notification" vertical async />
@@ -63,4 +63,3 @@ function Connector({ label, className, vertical = false, async = false }: {
 }) {
   return <div className={`connector ${className} ${vertical ? "vertical" : ""} ${async ? "async" : ""}`} aria-hidden="true">{label && <span>{label}</span>}</div>;
 }
-
