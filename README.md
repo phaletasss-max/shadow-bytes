@@ -7,7 +7,7 @@ Sistema académico de comercio electrónico para demostrar una Arquitectura Orie
 - **Sandbox:** un laboratorio interactivo tipo TryHackMe que funciona sólo en el navegador. Simula JWT, REST, RabbitMQ, eventos y fallos aislados sin Docker ni internet.
 - **Live:** conecta el mismo panel al gateway, servicios FastAPI y RabbitMQ reales definidos en Docker Compose.
 
-El panel incorpora las ocho diapositivas de la presentación, optimizadas como **WebP**, en **Academia SOA**. Incluye modo presentación con avance por botones o teclado, notas del orador y una pregunta breve por tema; cada tema se enlaza con una misión concreta para conectar la explicación con evidencia en vivo.
+El panel incorpora nueve diapositivas de la presentación, optimizadas como **WebP**, en **Academia SOA**. Incluye modo presentación con avance por botones o teclado, notas del orador y una pregunta breve por tema; cada tema se enlaza con una misión concreta para conectar la explicación con evidencia en vivo.
 
 ## Qué está implementado en este MVP
 

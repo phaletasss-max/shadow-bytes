@@ -52,6 +52,18 @@ export const lessons: Lesson[] = [
     question: { prompt: "¿Cuál es un consumidor asíncrono del pedido pagado?", choices: ["Shipping", "Gateway", "Products"], correctIndex: 0, explanation: "Shipping escucha ORDER_PAID mediante RabbitMQ y prepara el envío después del cobro." },
   },
   {
+    id: "parts", title: "Partes de un servicio", subtitle: "Contrato, interfaz e implementación", image: slide("service-parts.webp"),
+    concept: "Un servicio combina un contrato claro, una interfaz accesible, lógica interna, seguridad y mecanismos de comunicación.", mission: "Relaciona cada parte con Pedidos: contrato HTTP, endpoint, lógica de orquestación, JWT y llamadas REST o eventos.",
+    notes: ["Recorre las cinco partes de izquierda a derecha y conecta cada una con un ejemplo del laboratorio.", "Diferencia interfaz de implementación: la primera es visible para consumidores; la segunda permanece encapsulada."],
+    question: { prompt: "¿Qué parte define qué recibe y qué devuelve un servicio?", choices: ["El contrato", "La implementación", "El servidor físico"], correctIndex: 0, explanation: "El contrato especifica la capacidad, las entradas, las respuestas y las reglas visibles para los consumidores." },
+  },
+  {
+    id: "practices", title: "Buenas prácticas", subtitle: "Un sistema que puede evolucionar", image: slide("best-practices.webp"),
+    concept: "Contratos estables, salud, logs y seguridad hacen que la arquitectura pueda mantenerse.", mission: "Usa el stream de eventos y los indicadores de salud para explicar observabilidad.",
+    notes: ["Separar servicios aumenta la necesidad de observarlos bien.", "Usa los retos para mostrar que un fallo aislado no tiene por qué detener todo el negocio."],
+    question: { prompt: "¿Qué evidencia ayuda a diagnosticar una operación distribuida?", choices: ["Logs, salud y eventos", "Un único color de interfaz", "Duplicar los datos manualmente"], correctIndex: 0, explanation: "Salud, registros y trazas de eventos hacen visible el estado de una operación entre servicios." },
+  },
+  {
     id: "security", title: "Ciberseguridad en SOA", subtitle: "Identidad, autorización y perímetro", image: slide("security.webp"),
     concept: "El Gateway centraliza el acceso; JWT identifica al usuario; cada servicio valida su contrato.", mission: "Inicia sesión y observa la sesión JWT marcada en el centro de mando.",
     notes: ["Aclara que el Gateway no reemplaza las validaciones propias de cada servicio.", "Muestra una sesión Sandbox y explica que JWT transporta identidad y rol, no confianza ilimitada."],
@@ -68,12 +80,6 @@ export const lessons: Lesson[] = [
     concept: "Los servicios son autónomos, interoperables, sin estado cuando corresponde y observables.", mission: "Mira el evento ORDER_PAID entregarse a más de un consumidor sin cambiar Pagos.",
     notes: ["Explica el efecto práctico: añadir Reportes no obliga a modificar el código de Pagos.", "La trazabilidad del Mission Control ayuda a entender qué ocurrió entre servicios."],
     question: { prompt: "¿Qué permite añadir Reportes sin editar Pagos?", choices: ["El acoplamiento bajo mediante eventos", "Compartir la misma función", "Un navegador más rápido"], correctIndex: 0, explanation: "Los eventos permiten sumar consumidores con un contrato común y dependencias reducidas." },
-  },
-  {
-    id: "practices", title: "Buenas prácticas", subtitle: "Un sistema que puede evolucionar", image: slide("best-practices.webp"),
-    concept: "Contratos estables, salud, logs y seguridad hacen que la arquitectura pueda mantenerse.", mission: "Usa el stream de eventos y los indicadores de salud para explicar observabilidad.",
-    notes: ["Cierra con una idea importante: separar servicios aumenta la necesidad de observarlos bien.", "Usa los retos para mostrar que un fallo aislado no tiene por qué detener todo el negocio."],
-    question: { prompt: "¿Qué evidencia ayuda a diagnosticar una operación distribuida?", choices: ["Logs, salud y eventos", "Un único color de interfaz", "Duplicar los datos manualmente"], correctIndex: 0, explanation: "Salud, registros y trazas de eventos hacen visible el estado de una operación entre servicios." },
   },
 ];
 

@@ -19,6 +19,7 @@ SLIDES = {
     "queesoa.png": "what-is-soa.webp",
     "queesservicio.png": "service.webp",
     "tiposdeservicio.png": "service-types.webp",
+    "partesdeunservicio.png": "service-parts.webp",
     "ciberseguridadenelsoa.png": "security.webp",
     "sincronicoyasincronico.png": "sync-async.webp",
     "caracteristicas.png": "characteristics.webp",
