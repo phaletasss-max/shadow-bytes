@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { lessons } from "../data";
 
 type AcademyProps = {
@@ -6,8 +6,10 @@ type AcademyProps = {
 };
 
 export function Academy({ onLaunchMission }: AcademyProps) {
+  const presentationRef = useRef<HTMLElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPresenting, setIsPresenting] = useState(false);
+  const [fullscreenError, setFullscreenError] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [revealedQuestions, setRevealedQuestions] = useState<Record<string, boolean>>({});
@@ -20,6 +22,38 @@ export function Academy({ onLaunchMission }: AcademyProps) {
 
   const move = useCallback((direction: -1 | 1) => {
     setActiveIndex((current) => Math.min(lessons.length - 1, Math.max(0, current + direction)));
+  }, []);
+
+  const exitPresentation = useCallback(() => {
+    if (document.fullscreenElement === presentationRef.current) {
+      void document.exitFullscreen();
+    }
+  }, []);
+
+  const startPresentation = async () => {
+    const presentation = presentationRef.current;
+    if (!presentation?.requestFullscreen) {
+      setFullscreenError(true);
+      return;
+    }
+
+    setFullscreenError(false);
+    try {
+      await presentation.requestFullscreen();
+    } catch {
+      setFullscreenError(true);
+    }
+  };
+
+  useEffect(() => {
+    const syncPresentationState = () => {
+      const isActive = document.fullscreenElement === presentationRef.current;
+      setIsPresenting(isActive);
+      if (isActive) setFullscreenError(false);
+    };
+
+    document.addEventListener("fullscreenchange", syncPresentationState);
+    return () => document.removeEventListener("fullscreenchange", syncPresentationState);
   }, []);
 
   useEffect(() => {
@@ -37,12 +71,12 @@ export function Academy({ onLaunchMission }: AcademyProps) {
         event.preventDefault();
         move(-1);
       }
-      if (event.key === "Escape") setIsPresenting(false);
+      if (event.key === "Escape") exitPresentation();
     };
 
     window.addEventListener("keydown", handleKeydown);
     return () => window.removeEventListener("keydown", handleKeydown);
-  }, [isPresenting, move]);
+  }, [exitPresentation, isPresenting, move]);
 
   const progress = useMemo(() => `${((activeIndex + 1) / lessons.length) * 100}%`, [activeIndex]);
 
@@ -57,16 +91,17 @@ export function Academy({ onLaunchMission }: AcademyProps) {
   };
 
   return (
-    <section className={`academy ${isPresenting ? "is-presenting" : ""}`} aria-labelledby="academy-title">
+    <section ref={presentationRef} className={`academy ${isPresenting ? "is-presenting" : ""}`} aria-labelledby="academy-title">
       <header className="academy-intro">
         <div>
           <p className="eyebrow">PRESENTACIÓN INTERACTIVA</p>
           <h2 id="academy-title">Academia SOA</h2>
           <p>Presenta las diapositivas, utiliza tus notas y valida la comprensión antes de llevar al público al laboratorio.</p>
         </div>
-        <button type="button" className="secondary-action academy-launch" onClick={() => setIsPresenting(true)}>
+        <button type="button" className="secondary-action academy-launch" onClick={() => void startPresentation()}>
           Iniciar presentación <span aria-hidden="true">↗</span>
         </button>
+        {fullscreenError && <p className="fullscreen-error" role="status">El navegador bloqueó la pantalla completa. Permite el modo pantalla completa e inténtalo de nuevo.</p>}
       </header>
 
       <div className="academy-progress" aria-label={`Progreso: diapositiva ${activeIndex + 1} de ${lessons.length}`}>
@@ -85,8 +120,8 @@ export function Academy({ onLaunchMission }: AcademyProps) {
         <article className="presentation-deck" aria-live="polite">
           <div className="presentation-toolbar">
             <span className="slide-counter">{String(activeIndex + 1).padStart(2, "0")} / {String(lessons.length).padStart(2, "0")}</span>
-            <span>{isPresenting ? "MODO PRESENTACIÓN · ← → para avanzar" : "VISTA DEL PRESENTADOR"}</span>
-            {isPresenting && <button type="button" className="text-action" onClick={() => setIsPresenting(false)}>Salir (Esc)</button>}
+            <span>{isPresenting ? "PANTALLA COMPLETA · ← → para avanzar" : "VISTA DEL PRESENTADOR"}</span>
+            {isPresenting && <button type="button" className="text-action" onClick={exitPresentation}>Salir (Esc)</button>}
           </div>
 
           <figure className="lesson-image-wrap">
