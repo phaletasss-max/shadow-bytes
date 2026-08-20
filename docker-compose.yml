@@ -1,0 +1,133 @@
+name: shadowbytes-soa
+
+x-service-environment: &service-environment
+  JWT_SECRET: ${JWT_SECRET:-replace-this-demo-secret-before-deploying}
+  INTERNAL_API_KEY: ${INTERNAL_API_KEY:-replace-this-internal-demo-key}
+  RABBITMQ_URL: ${RABBITMQ_URL:-amqp://shadowbytes:shadowbytes@rabbitmq:5672/}
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      gateway:
+        condition: service_started
+    restart: unless-stopped
+
+  gateway:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      auth-service:
+        condition: service_started
+      product-service:
+        condition: service_started
+      order-service:
+        condition: service_started
+      reporting-service:
+        condition: service_started
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: shadowbytes
+      RABBITMQ_DEFAULT_PASS: shadowbytes
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  auth-service:
+    build:
+      context: ./services
+    command: uvicorn auth.main:app --host 0.0.0.0 --port 8000
+    environment: *service-environment
+    restart: unless-stopped
+
+  user-service:
+    build:
+      context: ./services
+    command: uvicorn users.main:app --host 0.0.0.0 --port 8000
+    environment: *service-environment
+    restart: unless-stopped
+
+  product-service:
+    build:
+      context: ./services
+    command: uvicorn products.main:app --host 0.0.0.0 --port 8000
+    environment: *service-environment
+    restart: unless-stopped
+
+  inventory-service:
+    build:
+      context: ./services
+    command: uvicorn inventory.main:app --host 0.0.0.0 --port 8000
+    environment: *service-environment
+    restart: unless-stopped
+
+  payment-service:
+    build:
+      context: ./services
+    command: uvicorn payments.main:app --host 0.0.0.0 --port 8000
+    environment: *service-environment
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  order-service:
+    build:
+      context: ./services
+    command: uvicorn orders.main:app --host 0.0.0.0 --port 8000
+    environment: *service-environment
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      inventory-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+      product-service:
+        condition: service_started
+    restart: unless-stopped
+
+  shipping-service:
+    build:
+      context: ./services
+    command: uvicorn shipping.main:app --host 0.0.0.0 --port 8000
+    environment: *service-environment
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  notification-service:
+    build:
+      context: ./services
+    command: uvicorn notifications.main:app --host 0.0.0.0 --port 8000
+    environment: *service-environment
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  reporting-service:
+    build:
+      context: ./services
+    command: uvicorn reports.main:app --host 0.0.0.0 --port 8000
+    environment: *service-environment
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
