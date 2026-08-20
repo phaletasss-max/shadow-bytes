@@ -2,13 +2,14 @@ import { useMemo, useState } from "react";
 import { Academy } from "./components/Academy";
 import { EventStream } from "./components/EventStream";
 import { ModeSwitch } from "./components/ModeSwitch";
+import { SoaDemo } from "./components/SoaDemo";
 import { StatusDot } from "./components/StatusDot";
 import { Topology } from "./components/Topology";
 import { challenges } from "./data";
 import { useLab } from "./hooks/useLab";
 import type { TraceState } from "./types";
 
-type View = "mission" | "academy" | "playbook";
+type View = "mission" | "demo" | "academy" | "playbook";
 
 export default function App() {
   const [view, setView] = useState<View>("mission");
@@ -42,10 +43,11 @@ export default function App() {
         </a>
         <nav aria-label="Navegación principal">
           <button type="button" className={view === "mission" ? "is-active" : ""} onClick={() => setView("mission")}>Mission Control</button>
+          <button type="button" className={view === "demo" ? "is-active" : ""} onClick={() => setView("demo")}>Simulación SOA</button>
           <button type="button" className={view === "academy" ? "is-active" : ""} onClick={() => setView("academy")}>Academia</button>
           <button type="button" className={view === "playbook" ? "is-active" : ""} onClick={() => setView("playbook")}>Playbook</button>
         </nav>
-        <ModeSwitch mode={lab.mode} liveAvailable={lab.liveAvailable} onChange={lab.setMode} />
+        {view === "demo" ? <span className="demo-header-badge">DEMO LOCAL</span> : <ModeSwitch mode={lab.mode} liveAvailable={lab.liveAvailable} onChange={lab.setMode} />}
       </header>
 
       {view === "mission" && (
@@ -72,6 +74,8 @@ export default function App() {
           onReset={lab.resetSandbox}
         />
       )}
+
+      {view === "demo" && <SoaDemo />}
 
       {view === "academy" && <Academy onLaunchMission={() => setView("mission")} />}
 
