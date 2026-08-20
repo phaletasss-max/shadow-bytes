@@ -7,7 +7,7 @@ Sistema académico de comercio electrónico para demostrar una Arquitectura Orie
 - **Sandbox:** un laboratorio interactivo tipo TryHackMe que funciona sólo en el navegador. Simula JWT, REST, RabbitMQ, eventos y fallos aislados sin Docker ni internet.
 - **Live:** conecta el mismo panel al gateway, servicios FastAPI y RabbitMQ reales definidos en Docker Compose.
 
-El panel incorpora las ocho imágenes de la presentación en **Academia SOA**. Cada tema se enlaza con una misión concreta para que la exposición conecte la explicación con una evidencia en vivo.
+El panel incorpora las ocho diapositivas de la presentación, optimizadas como **WebP**, en **Academia SOA**. Incluye modo presentación con avance por botones o teclado, notas del orador y una pregunta breve por tema; cada tema se enlaza con una misión concreta para conectar la explicación con evidencia en vivo.
 
 ## Qué está implementado en este MVP
 
@@ -108,7 +108,7 @@ docker compose start notification-service
 ```text
 shadow-bytes-SOA/
 ├── frontend/                 # Panel React/Vite y proxy del navegador al gateway
-│   └── public/presentacion/  # Diapositivas integradas en Academia SOA
+│   └── public/presentacion/  # Diapositivas WebP integradas en Academia SOA
 ├── gateway/                  # Enrutamiento, encabezados y rate limit de Nginx
 ├── services/
 │   ├── common/               # JWT, contratos de evento y utilidades compartidas
@@ -116,7 +116,8 @@ shadow-bytes-SOA/
 │   └── shipping/ notifications/ reports/
 ├── database/                 # Diseño para persistencia por servicio (fase siguiente)
 ├── monitoring/               # Diseño para Prometheus/Grafana (fase siguiente)
-├── img/                      # Archivos originales de la presentación
+├── img/                      # PNG originales de la presentación (fuentes)
+├── scripts/                  # Conversión reproducible de fuentes a WebP
 ├── docs/                     # Arquitectura y guion de presentación
 ├── .github/workflows/        # Verificación y despliegue del Sandbox
 └── docker-compose.yml
@@ -124,7 +125,7 @@ shadow-bytes-SOA/
 
 ## Publicar el Sandbox
 
-Al hacer push a `main`, GitHub Actions compila y publica la versión Sandbox en GitHub Pages. Consulta [docs/deployment.md](docs/deployment.md): GitHub Pages comparte el laboratorio y las diapositivas, mientras que el modo Live requiere un servidor Docker para ejecutar RabbitMQ y FastAPI.
+Al hacer push a `main`, GitHub Actions compila y publica la versión Sandbox en GitHub Pages. También se puede importar este repositorio en Vercel: el archivo `vercel.json` construye `frontend/` y publica `frontend/dist`. Consulta [docs/deployment.md](docs/deployment.md): Vercel y GitHub Pages comparten el laboratorio y las diapositivas, mientras que el modo Live requiere un servidor Docker para ejecutar RabbitMQ y FastAPI.
 
 ## Verificación rápida por API
 

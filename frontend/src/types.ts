@@ -51,6 +51,13 @@ export type Lesson = {
   image: string;
   concept: string;
   mission: string;
+  notes: string[];
+  question: {
+    prompt: string;
+    choices: string[];
+    correctIndex: number;
+    explanation: string;
+  };
 };
 
 export type Challenge = {
@@ -61,4 +68,3 @@ export type Challenge = {
 };
 
 export type ChallengeState = "locked" | "ready" | "complete";
-
