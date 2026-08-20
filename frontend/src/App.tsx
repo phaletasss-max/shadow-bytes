@@ -6,6 +6,7 @@ import { StatusDot } from "./components/StatusDot";
 import { Topology } from "./components/Topology";
 import { challenges } from "./data";
 import { useLab } from "./hooks/useLab";
+import type { TraceState } from "./types";
 
 type View = "mission" | "academy" | "playbook";
 
@@ -126,12 +127,30 @@ function MissionControl({
             <button type="button" className="secondary-action" onClick={onToggleNotification}>Probar fallo aislado</button>
           </div>
         </div>
-        <div className="mission-status" aria-label="Resumen operativo">
-          <div className="status-number"><strong>{activeServiceCount}</strong><span>/ {services.length} servicios activos</span></div>
-          <div className="status-rows">
-            <span><StatusDot state={mode === "sandbox" || liveAvailable ? "UP" : "DOWN"} /> Gateway {mode === "sandbox" ? "emulado" : liveAvailable ? "en línea" : "sin conexión"}</span>
-            <span><StatusDot state={notificationState} /> Notificaciones {notificationState === "DOWN" ? "aislado" : "listo"}</span>
-            <span><StatusDot state={events.length ? "done" : "idle"} /> {events.length} eventos registrados</span>
+        <div className={`mission-visual ${isRunning ? "is-running" : ""}`}>
+          <div className="ops-scene" aria-hidden="true">
+            <span className={`scene-beam beam-gateway ${trace.gateway}`} />
+            <span className={`scene-beam beam-orders ${trace.orders}`} />
+            <span className={`scene-beam beam-events ${trace.rabbitmq}`} />
+            <div className="ops-core">
+              <span className="core-orbit" />
+              <span className="core-cube">
+                {(["front", "back", "right", "left", "top", "bottom"] as const).map((face) => <i className={`cube-${face}`} key={face} />)}
+              </span>
+              <small>{isRunning ? "EN RUTA" : "SOA CORE"}</small>
+            </div>
+            <OpsAgent label="Gateway" className="agent-gateway" state={trace.gateway} />
+            <OpsAgent label="Pedidos" className="agent-orders" state={trace.orders} />
+            <OpsAgent label="Eventos" className="agent-events" state={trace.rabbitmq} />
+          </div>
+
+          <div className="mission-status" aria-label="Resumen operativo">
+            <div className="status-number"><strong>{activeServiceCount}</strong><span>/ {services.length} servicios activos</span></div>
+            <div className="status-rows">
+              <span><StatusDot state={mode === "sandbox" || liveAvailable ? "UP" : "DOWN"} /> Gateway {mode === "sandbox" ? "emulado" : liveAvailable ? "en línea" : "sin conexión"}</span>
+              <span><StatusDot state={notificationState} /> Notificaciones {notificationState === "DOWN" ? "aislado" : "listo"}</span>
+              <span><StatusDot state={events.length ? "done" : "idle"} /> {events.length} eventos registrados</span>
+            </div>
           </div>
         </div>
       </section>
@@ -173,6 +192,22 @@ function MissionControl({
       <Topology trace={trace} />
       <EventStream events={events} notifications={notifications} />
     </>
+  );
+}
+
+function OpsAgent({ label, className, state }: {
+  label: string;
+  className: string;
+  state: TraceState;
+}) {
+  return (
+    <span className={`ops-agent ${className} ${state}`}>
+      <span className="agent-character">
+        <i className="agent-head"><b /><b /></i>
+        <i className="agent-body" />
+      </span>
+      <small>{label}</small>
+    </span>
   );
 }
 

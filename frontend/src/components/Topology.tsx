@@ -48,9 +48,15 @@ function Node({ label, caption, state, className, broker = false }: {
 }) {
   return (
     <article className={`map-node ${className} ${state} ${broker ? "broker" : ""}`} aria-label={`${label}: ${state}`}>
+      <span className="service-character" aria-hidden="true">
+        <span className="service-character-head"><i /><i /></span>
+        <span className="service-character-body" />
+      </span>
+      <span className="node-copy">
+        <strong>{label}</strong>
+        <span>{caption}</span>
+      </span>
       <StatusDot state={state} />
-      <strong>{label}</strong>
-      <span>{caption}</span>
     </article>
   );
 }

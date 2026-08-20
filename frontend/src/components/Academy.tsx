@@ -71,6 +71,18 @@ export function Academy({ onLaunchMission }: AcademyProps) {
         event.preventDefault();
         move(-1);
       }
+      if (event.key === " " || event.key === "Enter") {
+        event.preventDefault();
+        move(1);
+      }
+      if (event.key === "Home") {
+        event.preventDefault();
+        setActiveIndex(0);
+      }
+      if (event.key === "End") {
+        event.preventDefault();
+        setActiveIndex(lessons.length - 1);
+      }
       if (event.key === "Escape") exitPresentation();
     };
 
@@ -124,7 +136,13 @@ export function Academy({ onLaunchMission }: AcademyProps) {
             {isPresenting && <button type="button" className="text-action" onClick={exitPresentation}>Salir (Esc)</button>}
           </div>
 
-          <figure className="lesson-image-wrap">
+          <figure
+            className="lesson-image-wrap"
+            onClick={(event) => {
+              if (!isPresenting) return;
+              move(event.clientX < window.innerWidth / 2 ? -1 : 1);
+            }}
+          >
             <img src={lesson.image} alt={`Diapositiva ${activeIndex + 1}: ${lesson.title}`} width="1536" height="1024" loading={activeIndex === 0 ? "eager" : "lazy"} />
             <figcaption>{lesson.subtitle}</figcaption>
           </figure>
